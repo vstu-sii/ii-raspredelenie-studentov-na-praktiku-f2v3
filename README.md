@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/vstu-sii/ii-raspredelenie-studentov-na-praktiku-f2v3/actions/workflows/ci.yml/badge.svg)](https://github.com/vstu-sii/ii-raspredelenie-studentov-na-praktiku-f2v3/actions/workflows/ci.yml)
 
-**Прод (hello-world):** https://vstu-sii.github.io/ii-raspredelenie-studentov-na-praktiku-f2v3/
+**Прод (hello-world):** https://vkr-red.vercel.app/
 
 
 ## Как поднять
@@ -19,7 +19,7 @@
 ## Структура репозитория
 
 - `app/` — код приложения (FastAPI)
-- `public/` — статика прода (GitHub Pages)
+- `public/` — статика прода (Vercel)
 - `docs/` — документация (deploy, PRD, глоссарий и др.)
 - `.github/workflows/` — CI
 - `.github/PULL_REQUEST_TEMPLATE.md` — шаблон PR
