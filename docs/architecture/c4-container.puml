@@ -1,0 +1,45 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title C4 Container — ВКР-трекер (MVP)
+
+Person(deputy, "Замзав", "Владелец цикла")
+Person(teacher, "Руководитель ВКР", "Темы и пары")
+Person(secretary, "Секретарь", "Проект приказа")
+Person(student, "Студент", "Источники, сроки")
+Person(reviewer, "Рецензент", "Оценки просмотров")
+
+System_Boundary(vkr, "ВКР-трекер (MVP)") {
+
+  Container(spa, "Веб-интерфейс", "HTML/JS", "Экраны UC: циклы (UC-01), каталог (UC-02), карточка темы (UC-03), список литературы (UC-04), карточка просмотра (UC-05), дашборд (UC-06)")
+
+  Container(api, "Трекер-бэкенд", "FastAPI (монолит, ADR-002)", "Модули: tracker (окна, статусы), catalog (темы, пары, приказы), refchecker (ГОСТ, ADR-003), scheduler (план дат), notify (создание напоминаний)")
+
+  ContainerDb(db, "Postgres", "Supabase — прод; compose — dev (ADR-005)", "Справочники, статусы этапов, очередь notifications (ADR-004), кэш метаданных (ADR-003)")
+
+  Container(emailWorker, "Email-воркер", "Python", "Забирает события из очереди, доставляет письма, ретраи")
+
+  Container(botWorker, "Воркер мессенджера", "Python", "Забирает события из очереди, доставляет в мессенджер, ретраи")
+}
+
+System_Ext(meta, "Внешние базы метаданных", "Crossref, eLIBRARY, каталоги")
+System_Ext(smtp, "Email-канал", "SMTP-провайдер")
+System_Ext(botapi, "Bot API мессенджера", "HTTP API")
+
+Rel(deputy, spa, "Запускает цикл, дашборд")
+Rel(teacher, spa, "Темы, подача пар")
+Rel(secretary, spa, "Проверка и публикация приказа")
+Rel(student, spa, "Источники, свои сроки")
+Rel(reviewer, spa, "Оценка и комментарий")
+
+Rel(spa, api, "JSON API", "HTTPS")
+Rel(api, db, "Читает/пишет данные, кладёт события в очередь", "SQL")
+Rel(api, meta, "Метаданные по DOI/ISBN/URL", "HTTPS")
+
+Rel(emailWorker, db, "Забирает события notifications", "SQL polling")
+Rel(botWorker, db, "Забирает события notifications", "SQL polling")
+Rel(emailWorker, smtp, "Письма", "SMTP")
+Rel(botWorker, botapi, "Сообщения", "HTTPS")
+
+SHOW_LEGEND()
+@enduml
