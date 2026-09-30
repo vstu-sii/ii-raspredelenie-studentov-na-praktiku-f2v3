@@ -1,0 +1,70 @@
+# aact — архитектурные правила ВКР-трекера (MVP)
+# Проверка: aact check docs/architecture/aact.yml
+# Диаграммы: c4-context.puml, c4-container.puml (эта папка)
+
+project: vkr-tracker
+level: container
+diagram: c4-container.puml
+
+containers:
+  web:
+    name: Веб-интерфейс
+    tech: HTML/JS
+    owner: delivery
+    responsibility: Экраны UC-01..UC-06
+  api:
+    name: Трекер-бэкенд
+    tech: FastAPI
+    owner: delivery
+    responsibility: tracker, catalog, refchecker, scheduler, notify
+  db:
+    name: Postgres
+    tech: Supabase/dev-compose
+    owner: delivery
+    responsibility: Данные, очередь notifications, кэш метаданных
+  worker-email:
+    name: Email-воркер
+    tech: Python
+    owner: delivery
+    responsibility: Доставка писем из очереди
+  worker-bot:
+    name: Воркер мессенджера
+    tech: Python
+    owner: delivery
+    responsibility: Доставка сообщений из очереди
+
+relations:
+  - from: web
+    to: api
+    protocol: HTTPS
+  - from: api
+    to: db
+    protocol: SQL
+  - from: api
+    to: external-meta
+    protocol: HTTPS
+  - from: worker-email
+    to: db
+    protocol: SQL
+  - from: worker-email
+    to: external-smtp
+    protocol: SMTP
+  - from: worker-bot
+    to: db
+    protocol: SQL
+  - from: worker-bot
+    to: external-botapi
+    protocol: HTTPS
+
+external:
+  external-meta: Внешние базы метаданных (Crossref, eLIBRARY)
+  external-smtp: Email-канал
+  external-botapi: Bot API мессенджера
+
+rules:
+  - id: rel-targets-exist
+    text: Каждая связь ведёт к объявленному контейнеру или внешней системе
+  - id: container-fields-filled
+    text: У каждого контейнера заполнены name, tech, responsibility
+  - id: no-cross-module-db
+    text: Прямой доступ к db имеют только api и воркеры; веб-интерфейс ходит через api

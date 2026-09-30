@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВКР-трекер — прототип UI (Lab2)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; }
+  header { background: #1a3a6b; color: #fff; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 20px; }
+  header .user { font-size: 13px; opacity: .85; }
+  nav { background: #fff; border-bottom: 1px solid #dde1e8; padding: 0 28px; display: flex; gap: 4px; }
+  nav a { padding: 12px 16px; text-decoration: none; color: #5a6478; font-size: 14px; border-bottom: 2px solid transparent; }
+  nav a.active { color: #1a3a6b; border-bottom-color: #1a3a6b; font-weight: 600; }
+  main { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: #fff; border: 1px solid #dde1e8; border-radius: 10px; padding: 16px; }
+  .card h3 { font-size: 15px; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: #5a6478; }
+  .stage-title { font-size: 18px; margin: 4px 0 14px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .ok { background: #e3f7e8; color: #157347; }
+  .late { background: #fde8e8; color: #c0392b; }
+  .run { background: #e8f0fd; color: #1a5cd6; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #dde1e8; }
+  th, td { padding: 10px 14px; font-size: 13px; text-align: left; border-bottom: 1px solid #eef0f4; }
+  th { background: #f7f8fa; color: #5a6478; font-weight: 600; }
+  .btn { background: #1a3a6b; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  .note { font-size: 12px; color: #8a93a6; margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ВКР-трекер</h1>
+  <div class="user">Замзав · кафедра ИВТ · цикл 2026/27</div>
+</header>
+
+<nav>
+  <a href="#dash" class="active">Дашборд</a>
+  <a href="#catalog">Каталог тем</a>
+  <a href="#pairs">Пары и приказ</a>
+  <a href="#screen">Просмотры</a>
+</nav>
+
+<main>
+  <!-- ЭКРАН 1: Дашборд цикла (UC-06, UC-01) -->
+  <section id="dash">
+    <h2 class="stage-title">Дашборд цикла 2026/27</h2>
+    <div class="cards">
+      <div class="card"><h3>Каталог тем <span class="badge ok">закрыт</span></h3><p>Окно: 08.09–19.09 · 24/25 руководителей подали</p></div>
+      <div class="card"><h3>Проект приказа <span class="badge ok">отправлен</span></h3><p>Собран за 1 день после подачи пар (цель ≤1 дня)</p></div>
+      <div class="card"><h3>Просмотр №1 <span class="badge run">окно идёт</span></h3><p>18/22 оценок выставлено · напоминания 11.01</p></div>
+      <div class="card"><h3>Просмотр №2 <span class="badge late">2 просрочки</span></h3><p>Напоминания отправлены: студенту, преподавателю</p></div>
+    </div>
+    <table style="margin-top:16px">
+      <tr><th>Студент</th><th>Этап</th><th>Статус</th><th>Напоминания</th></tr>
+      <tr><td>Иванов А.</td><td>Просмотр №1</td><td><span class="badge run">в окне</span></td><td>—</td></tr>
+      <tr><td>Петрова М.</td><td>Просмотр №2</td><td><span class="badge late">просрочка</span></td><td>05.04: студенту и рецензенту</td></tr>
+      <tr><td>Сидоров К.</td><td>Источники</td><td><span class="badge ok">28/30 готово</span></td><td>—</td></tr>
+    </table>
+    <p class="note">Источник данных North Star: ≥90% этапов закрыто в срок без личных напоминаний замзава.</p>
+  </section>
+
+  <!-- ЭКРАН 2: Каталог тем (UC-02, UC-03) -->
+  <section id="catalog" style="display:none">
+    <h2 class="stage-title">Каталог тем · окно наполнения</h2>
+    <div class="card" style="margin-bottom:16px">
+      <h3>Статус наполнения</h3><p>23 из 25 руководителей подали темы. Окно закрывается 19.09.</p>
+      <button class="btn" style="margin-top:10px">Опубликовать каталог</button>
+    </div>
+    <table>
+      <tr><th>Тема</th><th>Руководитель</th><th>Действия</th></tr>
+      <tr><td>LLM-ревью студенческого кода</td><td>проф. Крылов</td><td><button class="btn">Перенести из 2025/26</button></td></tr>
+      <tr><td>Рефчекер библиографии по ГОСТ</td><td>доц. Егорова</td><td><button class="btn">Подать пару</button></td></tr>
+      <tr><td>Дашборд просрочек цикла ВКР</td><td>доц. Егорова</td><td><button class="btn">Подать пару</button></td></tr>
+    </table>
+    <p class="note">Темы без фамилий студентов. Пары «студент — тема» подаются из карточки темы (UC-03).</p>
+  </section>
+
+  <!-- ЭКРАН 3: Просмотры (UC-05) -->
+  <section id="screen" style="display:none">
+    <h2 class="stage-title">Просмотр №1 · окно 12.01–18.01</h2>
+    <div class="cards">
+      <div class="card"><h3>Иванов А. — «LLM-ревью студенческого кода»</h3>
+        <p>Оценка: — · рецензент: доц. Егорова</p>
+        <button class="btn" style="margin-top:10px">Выставить оценку</button></div>
+      <div class="card"><h3>Сидоров К. — «Рефчекер библиографии»</h3>
+        <p>Оценка: 4 · комментарий: сузить практическую часть</p></div>
+    </div>
+    <p class="note">Если окно закроется без оценки — система напомнит студенту и преподавателю в тот же день (H2).</p>
+  </section>
+</main>
+
+<script>
+  document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
+    a.classList.add('active');
+    document.querySelector(a.getAttribute('href')).style.display = 'block';
+  }));
+</script>
+</body>
+</html>
