@@ -1,0 +1,133 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity "people" as people {
+  * id : SERIAL <<PK>>
+  --
+  * full_name : TEXT
+  email : TEXT <<unique>>
+  telegram : TEXT
+  is_deputy / is_secretary / is_teacher / is_student : BOOLEAN
+}
+
+entity "cycles" as cycles {
+  * id : SERIAL <<PK>>
+  --
+  * title : TEXT
+  * started_on / ends_on : DATE
+  * created_by : INTEGER <<FK people>>
+}
+
+entity "stage_windows" as windows {
+  * id : SERIAL <<PK>>
+  --
+  * cycle_id : INTEGER <<FK cycles>>
+  * stage : TEXT (catalog|pairs|order|sources|screening1|screening2|predefense)
+  * opens_on / closes_on : DATE
+}
+
+entity "topics" as topics {
+  * id : SERIAL <<PK>>
+  --
+  * cycle_id : INTEGER <<FK cycles>>
+  * teacher_id : INTEGER <<FK people>>
+  * title : TEXT
+  carried_over : BOOLEAN
+  * status : TEXT (draft|published|approved|archived)
+}
+
+entity "pairs" as pairs {
+  * id : SERIAL <<PK>>
+  --
+  * topic_id : INTEGER <<FK topics, unique>>
+  * student_id : INTEGER <<FK people>>
+  * final_title : TEXT
+  * submitted_at : TIMESTAMPTZ
+}
+
+entity "orders" as orders {
+  * id : SERIAL <<PK>>
+  --
+  * cycle_id : INTEGER <<FK cycles>>
+  * draft : JSONB
+  sent_at : TIMESTAMPTZ
+  rectorate_reply : TEXT (signed|remarks)
+  published_at : TIMESTAMPTZ
+}
+
+entity "order_items" as order_items {
+  * id : SERIAL <<PK>>
+  --
+  * order_id : INTEGER <<FK orders>>
+  * pair_id : INTEGER <<FK pairs>>
+  * topic_code : TEXT
+}
+
+entity "sources" as sources {
+  * id : SERIAL <<PK>>
+  --
+  * student_id : INTEGER <<FK people>>
+  * cycle_id : INTEGER <<FK cycles>>
+  * identifier : TEXT
+  * gost_string : TEXT
+  is_foreign : BOOLEAN
+  * origin : TEXT (auto|manual)
+}
+
+entity "meta_cache" as cache {
+  * identifier : TEXT <<PK>>
+  --
+  * metadata : JSONB
+  * fetched_at : TIMESTAMPTZ
+}
+
+entity "screenings" as screenings {
+  * id : SERIAL <<PK>>
+  --
+  * cycle_id : INTEGER <<FK cycles>>
+  * stage : TEXT (screening1|screening2)
+  * student_id : INTEGER <<FK people>>
+  * reviewer_id : INTEGER <<FK people>>
+  grade : INTEGER (2..5)
+  comment / contact : TEXT
+  graded_at : TIMESTAMPTZ
+}
+
+entity "notifications" as notif {
+  * id : SERIAL <<PK>>
+  --
+  * recipient_id : INTEGER <<FK people>>
+  * channel : TEXT (email|messenger)
+  * payload : JSONB
+  * status : TEXT (pending|sent|failed)
+  attempts : INTEGER
+}
+
+entity "stage_status" as status {
+  * id : SERIAL <<PK>>
+  --
+  * cycle_id : INTEGER <<FK cycles>>
+  * student_id : INTEGER <<FK people>>
+  * stage : TEXT
+  * state : TEXT (pending|in_window|done_on_time|done_late|overdue)
+  artifact_url : TEXT
+}
+
+people ||--o{ cycles : "created_by"
+cycles ||--o{ windows : "этапы цикла"
+cycles ||--o{ topics : "каталог"
+cycles ||--o{ orders : "приказы"
+cycles ||--o{ sources : "списки литературы"
+cycles ||--o{ screenings : "просмотры"
+cycles ||--o{ status : "статусы этапов"
+people ||--o{ topics : "руководитель"
+people ||--o{ pairs : "студент"
+people ||--o{ sources : "студент"
+people ||--o{ screenings : "рецензент"
+people ||--o{ notif : "получатель"
+people ||--o{ status : "студент"
+topics ||--o| pairs : "одна пара на тему"
+orders ||--o{ order_items : "строки приказа"
+pairs ||--o{ order_items : "входит в приказ"
+@enduml
