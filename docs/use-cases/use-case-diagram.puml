@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Замзав" as Deputy
+actor "Секретарь кафедры" as Secretary
+actor "Руководитель ВКР" as Teacher
+actor "Студент" as Student
+actor "Рецензент" as Reviewer
+actor "Ректорат" as Rectorate <<external>>
+actor "Внешние базы метаданных\n(Crossref, eLIBRARY)" as Meta <<external>>
+
+rectangle "ВКР-трекер (MVP)" {
+  usecase "UC-01\nЗапустить цикл ВКР" as UC1
+  usecase "UC-02\nНаполнить каталог тем" as UC2
+  usecase "UC-03\nПодать пару и собрать\nпроект приказа" as UC3
+  usecase "UC-04\nДобавить источник\nчерез рефчекер" as UC4
+  usecase "UC-05\nПровести просмотр в окне" as UC5
+  usecase "UC-06\nОтследить статус цикла" as UC6
+}
+
+Deputy --> UC1
+Deputy --> UC6
+Teacher --> UC2
+Teacher --> UC3
+Secretary --> UC3
+Student --> UC4
+Reviewer --> UC5
+
+UC3 --> Rectorate
+UC4 --> Meta
+
+UC2 ..> UC1 : <<предусловие>>
+UC3 ..> UC2 : <<предусловие>>
+UC5 ..> UC1 : <<предусловие>>
+UC6 ..> UC1 : <<предусловие>>
+@enduml
