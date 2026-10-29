@@ -1,0 +1,116 @@
+@startuml
+' Lab 2 / VKR Topic Generator: ERD (not the AI pipeline sequence diagram)
+title ERD — Автоматизация ВКР с помощью ИИ (V35)
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+left to right direction
+
+entity "teachers" as teachers {
+  * id : integer <<PK>>
+  --
+  full_name : varchar(255)
+  topic_count : integer
+  department : varchar(255)
+  position : varchar(255)
+  research_areas : json
+  email : varchar(255)
+  created_at : timestamp
+}
+
+entity "past_topics" as past_topics {
+  * id : integer <<PK>>
+  --
+  * teacher_id : integer <<FK>>
+  title : text
+  year : integer
+  source_file : varchar(255)
+  is_reference : boolean
+}
+
+entity "generated_topics" as generated_topics {
+  * id : integer <<PK>>
+  --
+  * teacher_id : integer <<FK>>
+  source_past_topic_id : integer <<FK, nullable>>
+  title : text
+  rationale : text
+  generation_source : varchar(32)
+  generation_model : varchar(255)
+  profile_relevance_score : float
+  similarity_score : float
+  teacher_similarity_score : float
+  global_similarity_score : float
+  batch_similarity_score : float
+  similarity_method : varchar(50)
+  status : varchar(32)
+  manual_edit : boolean
+  created_at : timestamp
+}
+
+entity "generation_batches" as generation_batches {
+  * id : integer <<PK>>
+  --
+  focus : text
+  selections : json
+  created_at : timestamp
+}
+
+entity "generation_batch_topics" as generation_batch_topics {
+  * batch_id : integer <<PK, FK>>
+  * topic_id : integer <<PK, FK, UNIQUE>>
+}
+
+entity "quality_evaluation_runs" as quality_evaluation_runs {
+  * id : integer <<PK>>
+  --
+  * batch_id : integer <<FK>>
+  reference_count : integer
+  topic_count : integer
+  mode : varchar(50)
+  metrics : json
+  items : json
+  created_at : timestamp
+}
+
+entity "similarity_calibration_pairs" as similarity_calibration_pairs {
+  * id : integer <<PK>>
+  --
+  left_title : text
+  right_title : text
+  similarity_score : float
+  similarity_method : varchar(50)
+  label : varchar(20)
+}
+
+entity "app_settings" as app_settings {
+  * id : integer <<PK>>
+  --
+  mistral_chat_model : varchar(255)
+  mistral_embedding_model : varchar(255)
+  default_topic_count : integer
+  similarity_green_max : float
+  similarity_yellow_max : float
+  similarity_calibrated : boolean
+}
+
+teachers ||--o{ past_topics : "teacher_id"
+teachers ||--o{ generated_topics : "teacher_id"
+past_topics |o--o{ generated_topics : "source_past_topic_id (optional)"
+generation_batches ||--o{ generation_batch_topics : "batch_id"
+generated_topics ||--o| generation_batch_topics : "topic_id (unique)"
+generation_batches ||--o{ quality_evaluation_runs : "batch_id"
+
+note bottom of generation_batch_topics
+  Связь набора с темами — через таблицу-связку.
+  Прямого batch_id в generated_topics нет.
+end note
+
+note bottom of app_settings
+  Отдельная таблица настроек.
+  Значения секретов на диаграмме не приводятся.
+end note
+
+@enduml
+

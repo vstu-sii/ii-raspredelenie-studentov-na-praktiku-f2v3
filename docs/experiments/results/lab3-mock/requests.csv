@@ -1,0 +1,5 @@
+case_id,mode,model,prompt_version,request_id,status,latency_ms,prompt_tokens,completion_tokens,attempts,requested,returned
+education,mock,ministral-8b-2512,lab3-topics-v1,f4890bf4-04c4-416f-874c-52c428d6cfa1,ok,1.73,,,1,2,2
+vision,mock,ministral-8b-2512,lab3-topics-v1,361dfc18-e74c-4fa3-b24a-6e45291d5d68,ok,0.83,,,1,2,2
+security,mock,ministral-8b-2512,lab3-topics-v1,ca93390e-e65e-48eb-8b5b-bd014ea58ac1,ok,0.77,,,1,2,2
+injection,mock,ministral-8b-2512,lab3-topics-v1,18d25e03-270d-48c9-85a6-e9bc2a25e677,ok,0.57,,,1,1,1
