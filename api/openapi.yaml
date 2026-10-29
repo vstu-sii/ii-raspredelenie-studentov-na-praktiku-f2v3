@@ -553,3 +553,4 @@ components:
       properties:
         detail:
           type: string
+

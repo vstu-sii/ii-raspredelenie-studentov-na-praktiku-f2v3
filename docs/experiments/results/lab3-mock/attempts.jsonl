@@ -1,0 +1,8 @@
+{"request_id": "1d088e47-0125-46ef-af18-6610b2a22ab2", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 1.77}
+{"request_id": "7c2201d5-7a97-4c97-bbc2-6bbbdde67fd5", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.55}
+{"request_id": "290c9701-6650-44ad-add5-ea4bf0cec70b", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.58}
+{"request_id": "f7e00edb-efdf-48c5-9cd7-2b4d5c1747bf", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.5}
+{"request_id": "f4890bf4-04c4-416f-874c-52c428d6cfa1", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 1.73}
+{"request_id": "361dfc18-e74c-4fa3-b24a-6e45291d5d68", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.83}
+{"request_id": "ca93390e-e65e-48eb-8b5b-bd014ea58ac1", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.77}
+{"request_id": "18d25e03-270d-48c9-85a6-e9bc2a25e677", "model": "ministral-8b-2512", "attempt": 1, "prompt_version": "lab3-topics-v1", "http_status": 200, "latency_ms": 0.57}

@@ -1,0 +1,8 @@
+fastapi==0.162.0
+httpx[socks]==0.28.1
+pydantic==2.14.1
+langfuse==4.18.0
+uvicorn==0.54.0
+python-dotenv==1.2.4
+pytest==9.2.0
+PyYAML>=6,<7

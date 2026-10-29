@@ -155,3 +155,4 @@ CREATE TABLE generation_batch_topics (
 );
 
 COMMIT;
+
