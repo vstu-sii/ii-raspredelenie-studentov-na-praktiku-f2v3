@@ -1,0 +1,16 @@
+{
+  "mode": "live",
+  "is_model_benchmark": true,
+  "dataset_sha256": "f79d07180dbf1ee3984dee83d78e0a3000267f12dab2566688fb990bf3d24d64",
+  "cases": 4,
+  "successful": 4,
+  "success_rate": 1.0,
+  "latency_p50_ms": 1016.84,
+  "latency_max_ms": 1442.42,
+  "tokens_known": true,
+  "retrieval_metrics": null,
+  "retrieval_reason": "No retrieval in Lab 2 baseline",
+  "human_acceptance": null,
+  "model": "ministral-8b-2512",
+  "prompt_version": "lab3-topics-v1"
+}
