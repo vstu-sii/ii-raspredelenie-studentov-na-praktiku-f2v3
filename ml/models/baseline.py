@@ -1,6 +1,8 @@
 """Mistral baseline: compact schema, bounded retries, one observation per attempt."""
 import asyncio
+import hashlib
 import json
+import math
 import os
 import random
 import time
@@ -11,6 +13,9 @@ from datetime import datetime, timezone
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from ml.models.cache import GenerationCache
+from ml.prompts_v2 import VERSION, messages as v2_messages
+from ml.tools.history import HISTORY_TOOL, dispatch, tool_message
 from ml.tracing import Tracer
 
 PROMPT_VERSION = "lab3-topics-v1"
@@ -55,6 +60,7 @@ class Generation:
     prompt_tokens: int | None
     completion_tokens: int | None
     attempts: int
+    cache_hit: bool = False
 
 
 def retry_delay(response, attempt):
@@ -72,7 +78,8 @@ def retry_delay(response, attempt):
 
 class Baseline:
     def __init__(self, client: httpx.AsyncClient, tracer: Tracer, *, api_key=None,
-                 model=None, max_attempts=3, sleep=asyncio.sleep):
+                 model=None, max_attempts=3, sleep=asyncio.sleep, variant="v1",
+                 cache_ttl=0, history_tool=False):
         self.client, self.tracer = client, tracer
         self.api_key = api_key if api_key is not None else os.getenv("MISTRAL_API_KEY", "")
         self.model = model or os.getenv("MISTRAL_MODEL", "ministral-8b-2512")
@@ -81,8 +88,65 @@ class Baseline:
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be 1..5")
         self.max_attempts, self.sleep = max_attempts, sleep
+        if variant not in {"v1", "v2", "v2-compact"}:
+            raise ValueError("Unknown prompt variant")
+        if not math.isfinite(cache_ttl) or not 0 <= cache_ttl <= 86400:
+            raise ValueError("Cache TTL must be 0..86400 seconds")
+        if history_tool and (variant == "v1" or cache_ttl):
+            raise ValueError("History tool requires v2 and cache disabled")
+        self.variant = variant
+        self.prompt_version = {
+            "v1": PROMPT_VERSION, "v2": VERSION, "v2-compact": VERSION + "-compact",
+        }[variant]
+        self.cache = GenerationCache(cache_ttl)
+        self.history_tool = history_tool
 
-    async def generate(self, profile: Profile, count: int, focus: str | None, request_id: str):
+    async def history_turn(self, messages, profile, request_id):
+        """Let the model request a scoped read, then pass the result into generation."""
+        with self.tracer.attempt(request_id, self.model, messages, 1,
+                                 self.prompt_version + "-tool") as trace:
+            try:
+                response = await asyncio.wait_for(self.client.post(
+                    "https://api.mistral.ai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    json={"model": self.model, "messages": messages, "max_tokens": 150,
+                          "tools": [HISTORY_TOOL], "tool_choice": "any",
+                          "parallel_tool_calls": False},
+                    timeout=5,
+                ), timeout=5)
+                trace.status(response.status_code)
+                response.raise_for_status()
+                data = response.json()
+                usage = data.get("usage") or {}
+                if not isinstance(usage, dict):
+                    usage = {}
+                trace.usage(usage)
+                message = data["choices"][0]["message"]
+                calls = message["tool_calls"]
+                if not isinstance(calls, list) or len(calls) != 1:
+                    raise ValueError("Expected one tool call")
+                call = calls[0]
+                call_id = call["id"]
+                if not isinstance(call_id, str) or not call_id or len(call_id) > 128:
+                    raise ValueError("Invalid tool call ID")
+
+                async def read():
+                    return profile.past_topics
+
+                result = await dispatch(call, teacher_id=profile.teacher_id, read=read)
+                if result["status"] != "ok":
+                    trace.error("tool_" + result["status"])
+                    return None, usage
+                # Preserve the tool-call protocol; the backend supplies the result.
+                return [*messages,
+                        {"role": "assistant", "content": None, "tool_calls": calls},
+                        tool_message(call_id, result)], usage
+            except (TimeoutError, httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
+                trace.error("tool_turn_failed")
+                return None, None
+
+    async def generate(self, profile: Profile, count: int, focus: str | None, request_id: str,
+                       *, use_cache=True):
         if not 1 <= count <= 50:
             raise ValueError("count must be 1..50")
         if not self.api_key:
@@ -96,13 +160,35 @@ class Baseline:
         messages = [{"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}]
         started = time.perf_counter()
+        if self.variant != "v1":
+            messages = v2_messages(payload, compact=self.variant == "v2-compact")
+        cache_key = hashlib.sha256(json.dumps(
+            [self.model, self.prompt_version, messages], ensure_ascii=False,
+            sort_keys=True,
+        ).encode()).digest() if self.cache.ttl and use_cache else None
+        if cache_key is not None and (cached := self.cache.get(cache_key)) is not None:
+            return Generation(list(cached), self.model, request_id,
+                              round((time.perf_counter() - started) * 1000, 2),
+                              0, 0, 0, cache_hit=True)
         # Costs/tokens include every attempt for which the provider supplies usage.
         token_totals = {"prompt_tokens": 0, "completion_tokens": 0}
         usage_complete = True
+        if self.history_tool:
+            tool_input = v2_messages({**payload, "past_topics": []}, compact=False)
+            tool_input[0]["content"] += " Вызови read_topic_history для текущего teacher_id."
+            tool_history, usage = await self.history_turn(tool_input, profile, request_id)
+            if tool_history is not None:
+                messages = tool_history
+            for key in token_totals:
+                value = (usage or {}).get(key)
+                if type(value) is not int or value < 0:
+                    usage_complete = False
+                else:
+                    token_totals[key] += value
         for attempt in range(1, self.max_attempts + 1):
             response = None
             retry = False
-            with self.tracer.attempt(request_id, self.model, messages, attempt, PROMPT_VERSION) as trace:
+            with self.tracer.attempt(request_id, self.model, messages, attempt, self.prompt_version) as trace:
                 try:
                     response = await self.client.post(
                         "https://api.mistral.ai/v1/chat/completions",
@@ -140,7 +226,10 @@ class Baseline:
                                 or len({t.strip().casefold() for t in parsed.titles}) != count
                                 or data["choices"][0].get("finish_reason") == "length"):
                             raise ValueError("Output violates requested identity/count/title constraints")
-                        return Generation([t.strip() for t in parsed.titles], self.model, request_id,
+                        titles = [title.strip() for title in parsed.titles]
+                        if cache_key is not None:
+                            self.cache.put(cache_key, titles)
+                        return Generation(titles, self.model, request_id,
                                           round((time.perf_counter() - started) * 1000, 2),
                                           token_totals["prompt_tokens"] if usage_complete else None,
                                           token_totals["completion_tokens"] if usage_complete else None,

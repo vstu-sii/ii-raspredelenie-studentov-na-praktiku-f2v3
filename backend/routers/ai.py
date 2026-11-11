@@ -112,7 +112,7 @@ async def regenerate(topic_id: int, request: Request):
             raise HTTPException(404, "Тема не найдена")
         profile = repo.profile(old["teacher_id"])
         try:
-            generation = await request.app.state.baseline.generate(profile, 1, None, str(uuid4()))
+            generation = await request.app.state.baseline.generate(profile, 1, None, str(uuid4()), use_cache=False)
         except BaselineError as error:
             raise HTTPException(503, str(error)) from error
         topic = topic_record(generation.titles[0], profile, generation, repo.history(), [])

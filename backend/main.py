@@ -29,7 +29,12 @@ def create_app(repo=None, baseline=None):
         async with AsyncExitStack() as stack:
             if baseline is None:
                 client = await stack.enter_async_context(httpx.AsyncClient())
-                app.state.baseline = Baseline(client, Tracer())
+                app.state.baseline = Baseline(
+                    client, Tracer(),
+                    variant=os.getenv("AI_PROMPT_VARIANT", "v1"),
+                    cache_ttl=float(os.getenv("AI_CACHE_TTL_SECONDS", "0")),
+                    history_tool=os.getenv("AI_HISTORY_TOOL", "false").lower() == "true",
+                )
             else:
                 app.state.baseline = baseline
             try:
