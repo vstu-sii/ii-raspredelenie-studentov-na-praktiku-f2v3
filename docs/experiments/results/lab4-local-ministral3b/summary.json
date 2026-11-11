@@ -1,0 +1,69 @@
+{
+  "mode": "local",
+  "fixture_answers": false,
+  "model": "ministral-3b-2512",
+  "prompt_system_sha256": {
+    "lab3-topics-v1": "862ca011738f3adf26ec6a14ef68b8c1aea4c4f376b5bef1e6737faa2cd0bb67",
+    "lab4-topics-v2": "ea7bc00208b460ef118aa5bae5d4d562fe8ae5244b6169ef58a5e161b882c5df",
+    "lab4-topics-v2-compact": "ea7bc00208b460ef118aa5bae5d4d562fe8ae5244b6169ef58a5e161b882c5df"
+  },
+  "local_tokenizer_sha256": null,
+  "dataset_sha256": "d14d700ab8f917e31a8335f8a8e604a549ccf8ca03c0a830a15ae45b29f31bb1",
+  "cases": 7,
+  "usd_per_million_tokens": null,
+  "cold": {
+    "v1": {
+      "requests": 7,
+      "ok": 7,
+      "provider_calls": 8,
+      "cache_hits": 0,
+      "message_bytes_sent": 9528,
+      "median_latency_ms": 6827.804,
+      "estimated_input_tokens": null,
+      "estimated_input_cost_usd": null,
+      "input_tokens": 1782,
+      "output_tokens": 975,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    },
+    "v2": {
+      "requests": 7,
+      "ok": 5,
+      "provider_calls": 11,
+      "cache_hits": 0,
+      "message_bytes_sent": 16519,
+      "median_latency_ms": 6796.682,
+      "estimated_input_tokens": null,
+      "estimated_input_cost_usd": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    },
+    "v2-compact": {
+      "requests": 7,
+      "ok": 5,
+      "provider_calls": 11,
+      "cache_hits": 0,
+      "message_bytes_sent": 15817,
+      "median_latency_ms": 6580.865,
+      "estimated_input_tokens": null,
+      "estimated_input_cost_usd": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    }
+  },
+  "human_quality": "requires_review",
+  "local_inference": {
+    "engine": "llama.cpp b12292 af6b5243d",
+    "weights_sha256": "fec9d28c7f8dab7c6857d54b56c8264cce57d6f6d9003bd4110f6457f071c65a",
+    "endpoint": "http://127.0.0.1:8087/v1/chat/completions",
+    "temperature": 0.2,
+    "seed": 42
+  }
+}

@@ -5,6 +5,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 from collections import Counter
 from pathlib import Path
 from statistics import median
@@ -19,6 +20,19 @@ from ml.tracing import Tracer
 
 VARIANTS = ("v1", "v2", "v2-compact")
 DEFAULT_DATASET = "docs/quality/golden-dataset/lab4-cases.jsonl"
+LOCAL_ENDPOINT = "http://127.0.0.1:8087/v1/chat/completions"
+
+
+class LocalInference(httpx.AsyncHTTPTransport):
+    """Send the same messages and schema to a real local llama.cpp model."""
+
+    async def handle_async_request(self, request):
+        payload = json.loads(request.content)
+        payload["seed"] = payload.pop("random_seed")
+        forwarded = httpx.Request(
+            request.method, LOCAL_ENDPOINT, json=payload, extensions=request.extensions,
+        )
+        return await super().handle_async_request(forwarded)
 
 
 def write_json(path, data):
@@ -87,6 +101,8 @@ async def run(args):
             raise SystemExit("Install mistral-common to use --tokenizer-file.") from error
         tokenizer = MistralTokenizer.from_file(args.tokenizer_file)
 
+    prompt_versions = {}
+
     def observe(request):
         payload = json.loads(request.content)
         if tokenizer is not None:
@@ -95,6 +111,9 @@ async def run(args):
         measurements["calls"] += 1
         measurements["bytes"] += sum(len((message.get("content") or "").encode())
                                      for message in payload["messages"])
+        prompt_versions[model.prompt_version] = hashlib.sha256(
+            payload["messages"][0]["content"].encode()
+        ).hexdigest()
 
     async def on_request(request):
         observe(request)
@@ -104,12 +123,17 @@ async def run(args):
             "teachers": [{"teacher_id": case["teacher_id"], "titles": case["mock_titles"]}]
         })}}]})
 
-    transport = httpx.MockTransport(fixture) if args.mode == "mock" else None
+    transport = None
+    if args.mode == "mock":
+        transport = httpx.MockTransport(fixture)
+    elif args.mode == "local":
+        transport = LocalInference()
     async with httpx.AsyncClient(transport=transport, event_hooks={"request": [on_request]}) as client:
         models = {
             variant: Baseline(client, tracer, variant=variant,
-                              cache_ttl=300 if variant == "v2-compact" else 0,
-                              api_key="fixture-only" if args.mode == "mock" else None)
+                              cache_ttl=300 if variant == "v2-compact" and args.mode != "local" else 0,
+                              model="ministral-3b-2512" if args.mode == "local" else None,
+                              api_key={"mock": "fixture-only", "local": "local-only"}.get(args.mode))
             for variant in VARIANTS
         }
         for index, case in enumerate(cases):
@@ -120,12 +144,14 @@ async def run(args):
             order = VARIANTS[index % 3:] + VARIANTS[:index % 3]
             for variant in order:
                 model = models[variant]
-                for phase in ("cold", "repeat"):
+                phases = ("cold",) if args.mode == "local" else ("cold", "repeat")
+                for phase in phases:
                     if phase == "repeat" and variant == "v2":
                         continue
                     measurements.clear()
                     request_id = str(uuid4())
                     row = dict(case_id=case["id"], variant=variant, phase=phase,
+                               prompt_version=model.prompt_version,
                                request_id=request_id, ok=False, cache_hit=False, provider_calls=0,
                                message_bytes=0, estimated_input_tokens=None, input_tokens=None, output_tokens=None,
                                latency_ms=None, exact_duplicates=0, blocked_lexical=0, error="")
@@ -150,16 +176,25 @@ async def run(args):
     rates = (args.input_rate, args.output_rate) if args.input_rate is not None else None
     summary = {
         "mode": args.mode, "fixture_answers": args.mode == "mock", "model": models["v1"].model,
+        "prompt_system_sha256": prompt_versions,
         "local_tokenizer_sha256": (hashlib.sha256(Path(args.tokenizer_file).read_bytes()).hexdigest()
                                    if tokenizer else None),
         "dataset_sha256": hashlib.sha256(raw).hexdigest(), "cases": len(cases),
         "usd_per_million_tokens": {"input": rates[0], "output": rates[1]} if rates else None,
         "cold": {variant: totals([r for r in rows if r["variant"] == variant and
                                   r["phase"] == "cold"], rates, tokenizer is not None) for variant in VARIANTS},
-        "two_identical_requests": {variant: totals([r for r in rows if r["variant"] == variant],
-                                                   rates, tokenizer is not None) for variant in ("v1", "v2-compact")},
         "human_quality": "requires_review",
     }
+    if args.mode == "local":
+        summary["local_inference"] = {
+            "engine": args.engine_version, "weights_sha256": args.weights_sha256,
+            "endpoint": LOCAL_ENDPOINT, "temperature": 0.2, "seed": 42,
+        }
+    else:
+        summary["two_identical_requests"] = {
+            variant: totals([r for r in rows if r["variant"] == variant], rates, tokenizer is not None)
+            for variant in ("v1", "v2-compact")
+        }
     write_csv(output / "requests.csv", rows)
     (output / "answers.jsonl").write_text(
         "".join(json.dumps(answer, ensure_ascii=False) + "\n" for answer in answers), encoding="utf-8")
@@ -181,18 +216,32 @@ async def run(args):
     })
     write_json(output / "summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+    if args.mode == "local":
+        # Invalid model answers are an experimental result. Infrastructure errors
+        # still fail the run, even if a later retry succeeds.
+        attempts = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
+        return int(not attempts or any(
+            attempt.get("http_status") != 200 for attempt in attempts
+        ))
     return int(any(not row["ok"] for row in rows))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=["mock", "live"], required=True)
+    parser.add_argument("--mode", choices=["mock", "live", "local"], required=True)
     parser.add_argument("--dataset", default=DEFAULT_DATASET)
     parser.add_argument("--output", required=True)
     parser.add_argument("--tokenizer-file", help="Matching local Mistral tokenizer for input estimates")
     parser.add_argument("--input-rate", type=float, help="USD per million input tokens")
     parser.add_argument("--output-rate", type=float, help="USD per million output tokens")
+    parser.add_argument("--engine-version", help="llama.cpp build used for local inference")
+    parser.add_argument("--weights-sha256", help="SHA-256 of the GGUF loaded by llama.cpp")
     args = parser.parse_args()
+    if args.mode == "local":
+        if not args.engine_version or not re.fullmatch(r"[0-9a-f]{64}", args.weights_sha256 or ""):
+            parser.error("Local mode requires --engine-version and --weights-sha256.")
+        if args.input_rate is not None or args.output_rate is not None:
+            parser.error("Provider token rates apply to API runs, not local inference.")
     if (args.input_rate is None) != (args.output_rate is None):
         parser.error("Pass both rates or omit both.")
     if args.input_rate is not None:
