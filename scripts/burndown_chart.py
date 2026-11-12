@@ -120,4 +120,6 @@ ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1), frameon=False)
 
 fig.savefig(OUT)
 print(f"OK: {OUT} ({OUT.stat().st_size} bytes)")
-print(f"Срезы: факт {len(actual)}, план {len(plan)}; борд {total} ч; на конец {rows[-1]['hours']} ч")
+print(
+    f"Срезы: факт {len(actual)}, план {len(plan)}; борд {total} ч; на конец {rows[-1]['hours']} ч"
+)
