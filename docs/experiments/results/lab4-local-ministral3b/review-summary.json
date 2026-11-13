@@ -1,0 +1,133 @@
+{
+  "valid_cold_requests": {
+    "v1": {
+      "ok": 7,
+      "requests": 7
+    },
+    "v2": {
+      "ok": 5,
+      "requests": 7
+    },
+    "v2-compact": {
+      "ok": 5,
+      "requests": 7
+    }
+  },
+  "all_valid_answers": {
+    "v1": {
+      "titles": 11,
+      "profile_fit": 11,
+      "semantic_duplicate": 1,
+      "specific": 11,
+      "injection_followed": 1,
+      "rates": {
+        "profile_fit": 1.0,
+        "semantic_duplicate": 0.09090909090909091,
+        "specific": 1.0,
+        "injection_followed": 0.09090909090909091
+      }
+    },
+    "v2": {
+      "titles": 9,
+      "profile_fit": 9,
+      "semantic_duplicate": 0,
+      "specific": 8,
+      "injection_followed": 0,
+      "rates": {
+        "profile_fit": 1.0,
+        "semantic_duplicate": 0.0,
+        "specific": 0.8888888888888888,
+        "injection_followed": 0.0
+      }
+    },
+    "v2-compact": {
+      "titles": 9,
+      "profile_fit": 9,
+      "semantic_duplicate": 0,
+      "specific": 8,
+      "injection_followed": 0,
+      "rates": {
+        "profile_fit": 1.0,
+        "semantic_duplicate": 0.0,
+        "specific": 0.8888888888888888,
+        "injection_followed": 0.0
+      }
+    }
+  },
+  "paired": {
+    "v1 vs v2": {
+      "case_ids": [
+        "education",
+        "history-long",
+        "injection-json",
+        "security",
+        "vision"
+      ],
+      "scores": {
+        "v1": {
+          "titles": 9,
+          "profile_fit": 9,
+          "semantic_duplicate": 1,
+          "specific": 9,
+          "injection_followed": 1,
+          "rates": {
+            "profile_fit": 1.0,
+            "semantic_duplicate": 0.1111111111111111,
+            "specific": 1.0,
+            "injection_followed": 0.1111111111111111
+          }
+        },
+        "v2": {
+          "titles": 9,
+          "profile_fit": 9,
+          "semantic_duplicate": 0,
+          "specific": 8,
+          "injection_followed": 0,
+          "rates": {
+            "profile_fit": 1.0,
+            "semantic_duplicate": 0.0,
+            "specific": 0.8888888888888888,
+            "injection_followed": 0.0
+          }
+        }
+      }
+    },
+    "v2 vs v2-compact": {
+      "case_ids": [
+        "education",
+        "history-long",
+        "injection-json",
+        "security",
+        "vision"
+      ],
+      "scores": {
+        "v2": {
+          "titles": 9,
+          "profile_fit": 9,
+          "semantic_duplicate": 0,
+          "specific": 8,
+          "injection_followed": 0,
+          "rates": {
+            "profile_fit": 1.0,
+            "semantic_duplicate": 0.0,
+            "specific": 0.8888888888888888,
+            "injection_followed": 0.0
+          }
+        },
+        "v2-compact": {
+          "titles": 9,
+          "profile_fit": 9,
+          "semantic_duplicate": 0,
+          "specific": 8,
+          "injection_followed": 0,
+          "rates": {
+            "profile_fit": 1.0,
+            "semantic_duplicate": 0.0,
+            "specific": 0.8888888888888888,
+            "injection_followed": 0.0
+          }
+        }
+      }
+    }
+  }
+}

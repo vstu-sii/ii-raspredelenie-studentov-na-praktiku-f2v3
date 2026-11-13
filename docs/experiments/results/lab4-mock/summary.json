@@ -1,0 +1,92 @@
+{
+  "mode": "mock",
+  "fixture_answers": true,
+  "model": "ministral-8b-2512",
+  "local_tokenizer_sha256": "600bb27946565481ecf51ba8aee252e49b9a68507866080ac9c30185bb312843",
+  "dataset_sha256": "d14d700ab8f917e31a8335f8a8e604a549ccf8ca03c0a830a15ae45b29f31bb1",
+  "cases": 7,
+  "usd_per_million_tokens": {
+    "input": 0.1,
+    "output": 0.1
+  },
+  "cold": {
+    "v1": {
+      "requests": 7,
+      "ok": 7,
+      "provider_calls": 7,
+      "cache_hits": 0,
+      "message_bytes_sent": 8582,
+      "median_latency_ms": 1.461,
+      "estimated_input_tokens": 1596,
+      "estimated_input_cost_usd": 0.00015960000000000003,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    },
+    "v2": {
+      "requests": 7,
+      "ok": 7,
+      "provider_calls": 7,
+      "cache_hits": 0,
+      "message_bytes_sent": 11199,
+      "median_latency_ms": 1.649,
+      "estimated_input_tokens": 2002,
+      "estimated_input_cost_usd": 0.00020020000000000001,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    },
+    "v2-compact": {
+      "requests": 7,
+      "ok": 7,
+      "provider_calls": 7,
+      "cache_hits": 0,
+      "message_bytes_sent": 10497,
+      "median_latency_ms": 1.6,
+      "estimated_input_tokens": 1900,
+      "estimated_input_cost_usd": 0.00019,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    }
+  },
+  "two_identical_requests": {
+    "v1": {
+      "requests": 14,
+      "ok": 14,
+      "provider_calls": 14,
+      "cache_hits": 0,
+      "message_bytes_sent": 17164,
+      "median_latency_ms": 1.516,
+      "estimated_input_tokens": 3192,
+      "estimated_input_cost_usd": 0.00031920000000000006,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    },
+    "v2-compact": {
+      "requests": 14,
+      "ok": 14,
+      "provider_calls": 7,
+      "cache_hits": 7,
+      "message_bytes_sent": 10497,
+      "median_latency_ms": 0.9455,
+      "estimated_input_tokens": 1900,
+      "estimated_input_cost_usd": 0.00019,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "exact_duplicates": 0,
+      "blocked_lexical": 0
+    }
+  },
+  "human_quality": "requires_review"
+}

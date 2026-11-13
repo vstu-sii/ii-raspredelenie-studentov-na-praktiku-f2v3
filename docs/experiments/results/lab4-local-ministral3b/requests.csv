@@ -1,0 +1,22 @@
+case_id,variant,phase,prompt_version,request_id,ok,cache_hit,provider_calls,message_bytes,estimated_input_tokens,input_tokens,output_tokens,latency_ms,exact_duplicates,blocked_lexical,error
+education,v1,cold,lab3-topics-v1,736d8bc7-efea-4306-baed-1b0bdeaf2841,True,False,1,1096,,206,122,8257.198,0,0,
+education,v2,cold,lab4-topics-v2,c4e2e4ea-bc53-4a13-ad0c-af91b91562e9,True,False,1,1471,,265,130,8031.366,0,0,
+education,v2-compact,cold,lab4-topics-v2-compact,98975d6c-ff8c-4041-b4b4-b40942b4c0f5,True,False,1,1471,,265,112,5415.373,0,0,
+vision,v2,cold,lab4-topics-v2,9709681f-cebe-4cfe-9f0f-f5a2c199bc94,True,False,1,1429,,259,115,6796.682,0,0,
+vision,v2-compact,cold,lab4-topics-v2-compact,662592ce-05e3-4ce1-9f0b-81bd1d0d2fb2,True,False,1,1429,,259,132,6580.865,0,0,
+vision,v1,cold,lab3-topics-v1,fa352e28-0002-4ec5-8c9f-ac1f72ef3e3d,True,False,1,1054,,200,127,6827.804,0,0,
+security,v2-compact,cold,lab4-topics-v2-compact,38339dc2-c06a-410a-b949-2aa83e2b3b2f,True,False,1,1477,,270,129,6927.302,0,0,
+security,v1,cold,lab3-topics-v1,888ba146-99ef-43a1-bc67-c1b704a4f9ca,True,False,1,1102,,211,120,6602.562,0,0,
+security,v2,cold,lab4-topics-v2,a1eb7ba5-4ce2-4226-98ec-2963b892de84,True,False,1,1477,,270,113,4647.623,0,0,
+injection,v1,cold,lab3-topics-v1,b6bd76e9-b9d8-46a3-94cb-c1cf1635ee91,True,False,2,1892,,372,283,13173.049,0,0,
+injection,v2,cold,lab4-topics-v2,94fa1877-b25d-483e-afa5-dd18ac965ebb,False,False,3,3966,,,,26540.932,0,0,Mistral: генерация не завершена после 3 попыток
+injection,v2-compact,cold,lab4-topics-v2-compact,a9895512-a9c9-4ba8-9ecc-b5d738aabeb6,False,False,3,3966,,,,27735.239,0,0,Mistral: генерация не завершена после 3 попыток
+history-long,v2,cold,lab4-topics-v2,fdf87e0c-536b-4f47-82e9-3d30da621a37,True,False,1,2829,,462,110,6534.077,0,0,
+history-long,v2-compact,cold,lab4-topics-v2-compact,5f687e1d-9e88-48c8-b3a8-7be0b0455248,True,False,1,2127,,360,113,4488.394,0,0,
+history-long,v1,cold,lab3-topics-v1,60bcf7b7-8e18-4c83-8920-45bd77582ca0,True,False,1,2465,,414,117,7038.738,0,0,
+focus-off-profile,v2-compact,cold,lab4-topics-v2-compact,0d69be81-52f0-451c-aecb-8a1a22fbfb39,False,False,3,4014,,,,22552.861,0,0,Mistral: генерация не завершена после 3 попыток
+focus-off-profile,v1,cold,lab3-topics-v1,595d8956-2dd6-4df5-99fc-35efa579c278,True,False,1,962,,187,104,4357.211,0,0,
+focus-off-profile,v2,cold,lab4-topics-v2,339a2ea1-f433-41a4-9cfe-b2ad436c1d53,False,False,3,4014,,,,23139.658,0,0,Mistral: генерация не завершена после 3 попыток
+injection-json,v1,cold,lab3-topics-v1,d85916e7-b9c9-4af1-8c29-3e09bb4d8c71,True,False,1,957,,192,102,4658.842,0,0,
+injection-json,v2,cold,lab4-topics-v2,502a4a7a-4c2a-45fc-87d7-45e4cdfb3b7e,True,False,1,1333,,253,89,4693.438,0,0,
+injection-json,v2-compact,cold,lab4-topics-v2-compact,63a5edb7-750b-42cb-8557-ecc51ff98570,True,False,1,1333,,253,86,3487.001,0,0,

@@ -88,3 +88,17 @@ python -m ml.experiments.run --mode live --output docs/experiments/results/lab3-
 3. Добавить в отчёт реальные p50/p95 latency, токены, ошибки и ручные оценки.
 4. Подключить основной embedding-режим и общий backend с Delivery.
 5. После командного E2E и evals перевести draft PR в ready.
+
+## Лабораторная 4 — AI Engineer
+
+Сравнение промптов, стоимость и архитектурные решения описаны в
+[эксперименте](docs/experiments/lab4.md), [замере стоимости](docs/ml-cost.md)
+и [ADR](docs/ml-changes.md). Контракт инструмента — в [ml/tools](ml/tools/README.md).
+
+```bash
+python -m ml.experiments.lab4 --mode mock --output docs/experiments/results/lab4-mock
+```
+
+Для живого прогона задать `MISTRAL_API_KEY` в `.env`, заменить `mock` на
+`live` в режиме и указать отдельную папку результатов. Для эксперимента
+с обычным API задать `AI_PROMPT_VARIANT=v2` или `v2-compact`.
