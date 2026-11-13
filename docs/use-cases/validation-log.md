@@ -2,7 +2,7 @@
 # Журнал валидации UC на прототипе — лаба 3 (Product/VO)
 
 Дата валидации: 30.10.2026. Роль: Product/VO.
-Прототип: PR #6, ветка lab3-ai-engineer-prototype, состояние на 29.10.2026
+Прототип: PR #7, ветка lab3-ai-engineer-prototype, состояние на 29.10.2026
 (commit 408ae6a «Lab3: implement AI baseline, tracing and API»).
 
 ## Метод валидации
