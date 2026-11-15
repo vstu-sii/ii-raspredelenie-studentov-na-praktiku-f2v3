@@ -20,6 +20,7 @@ from ml.tools.history import HISTORY_TOOL, dispatch, tool_message
 from ml.tracing import Tracer
 
 PROMPT_VERSION = "lab3-topics-v1"
+OUTPUT_SCHEMA_VERSION = "lab5-exact-count-v1"
 SYSTEM_PROMPT = (
     "Ты предлагаешь темы бакалаврских ВКР 09.03.01. Верни только JSON по схеме. "
     "Каждая тема описывает конкретный программный продукт, задачу и функцию. "
@@ -166,7 +167,8 @@ class Baseline:
         if self.variant != "v1":
             messages = v2_messages(payload, compact=self.variant == "v2-compact")
         cache_key = hashlib.sha256(json.dumps(
-            [self.model, self.prompt_version, FOCUS_POLICY_VERSION if self.focus_guard else None, messages],
+            [self.model, self.prompt_version, OUTPUT_SCHEMA_VERSION,
+             FOCUS_POLICY_VERSION if self.focus_guard else None, messages],
             ensure_ascii=False,
             sort_keys=True,
         ).encode()).digest() if self.cache.ttl and use_cache else None
@@ -189,6 +191,8 @@ class Baseline:
                     usage_complete = False
                 else:
                     token_totals[key] += value
+        schema = CompactOutput.model_json_schema()
+        schema["$defs"]["Titles"]["properties"]["titles"].update(minItems=count, maxItems=count)
         for attempt in range(1, self.max_attempts + 1):
             response = None
             retry = False
@@ -201,7 +205,7 @@ class Baseline:
                               "random_seed": 42, "max_tokens": min(8192, count * 120 + 100),
                               "response_format": {"type": "json_schema", "json_schema": {
                                   "name": "teacher_titles", "strict": True,
-                                  "schema": CompactOutput.model_json_schema()}}},
+                                  "schema": schema}}},
                         timeout=40,
                     )
                     trace.status(response.status_code)

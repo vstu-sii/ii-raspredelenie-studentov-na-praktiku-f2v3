@@ -15,7 +15,7 @@ import httpx
 from dotenv import load_dotenv
 
 from ml.experiments.lab4 import LocalInference, normalized, write_csv, write_json
-from ml.models.baseline import Baseline, BaselineError, Profile, SYSTEM_PROMPT
+from ml.models.baseline import Baseline, BaselineError, OUTPUT_SCHEMA_VERSION, Profile, SYSTEM_PROMPT
 from ml.models.focus import FOCUS_POLICY_VERSION
 from ml.models.quality import screen, words
 from ml.tracing import Tracer
@@ -202,6 +202,7 @@ async def run(args):
         "revision": revision, "tag": args.tag, "baseline_commit": BASELINE,
         "prompt_version": models["final"].prompt_version, "system_prompt_sha256": digest(SYSTEM_PROMPT.encode()),
         "focus_policy_version": FOCUS_POLICY_VERSION,
+        "output_schema_version": OUTPUT_SCHEMA_VERSION,
         "model_configuration": {"engine": args.engine_version, "weights_sha256": args.weights_sha256,
                                 "temperature": 0.2, "seed": 42, "attempts_limit": 3},
         "dataset_sha256": dataset_sha, "cases": len(cases), "repeat_case_ids": sorted(repeat_ids),

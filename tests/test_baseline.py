@@ -40,6 +40,23 @@ def test_success_and_redacted_trace(tmp_path):
     assert json.loads(text)["http_status"] == 200
 
 
+def test_output_schema_constrains_requested_count(tmp_path):
+    async def run():
+        def handler(request):
+            payload = json.loads(request.content)
+            schema = payload["response_format"]["json_schema"]["schema"]
+            titles = schema["$defs"]["Titles"]["properties"]["titles"]
+            assert titles["minItems"] == titles["maxItems"] == 2
+            return response(titles=[TITLE, "Разработка модулей мониторинга проектов"])
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            model = Baseline(client, Tracer("local", tmp_path / "trace"), api_key="mock")
+            profile = Profile(teacher_id=1, scientific_areas=["информационные системы"])
+            assert len((await model.generate(profile, 2, None, "count")).titles) == 2
+
+    asyncio.run(run())
+
+
 def test_retry_each_attempt_traced(tmp_path):
     calls = []
     def handler(_):
