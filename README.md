@@ -102,3 +102,10 @@ python -m ml.experiments.lab4 --mode mock --output docs/experiments/results/lab4
 Для живого прогона задать `MISTRAL_API_KEY` в `.env`, заменить `mock` на
 `live` в режиме и указать отдельную папку результатов. Для эксперимента
 с обычным API задать `AI_PROMPT_VARIANT=v2` или `v2-compact`.
+
+## Лабораторная 5 — AI Engineer
+
+[Финальные метрики](docs/ml-final-metrics.md) ·
+[Вклад схемы, фильтра и кэша](docs/experiments/lab5.md) ·
+[Ноутбук](notebooks/lab5-ablation.ipynb) ·
+[Как воспроизвести прогон](docs/ml-documentation.md#воспроизведение-финальных-метрик)
