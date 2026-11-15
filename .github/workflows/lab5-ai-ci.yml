@@ -1,0 +1,32 @@
+name: Lab 5 AI CI
+
+on:
+  pull_request:
+    paths:
+      - 'ml/**'
+      - 'tests/**'
+      - 'docs/quality/golden-dataset/**'
+      - 'docs/experiments/results/lab5-*/**'
+      - 'requirements-ai.txt'
+      - '.github/workflows/lab5-ai-ci.yml'
+  push:
+    tags:
+      - 'lab5-ai-eval-*'
+
+permissions:
+  contents: read
+
+jobs:
+  pytest-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-ai.txt
+      - run: python -m pip install -r requirements-ai.txt
+      - run: python -m pytest -q
+      - run: python -m ml.experiments.lab5 --mode mock --output var/lab5-ci-smoke

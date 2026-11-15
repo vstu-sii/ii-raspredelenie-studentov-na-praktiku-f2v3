@@ -1,0 +1,46 @@
+{
+  "tag": "lab5-ai-eval-v2",
+  "revision": "4fc521858575d08da677878213a6097bc4c41a55",
+  "dataset_sha256": "821bd7247688163f56a5500f66730028601390089c9a41a55bc1117e7bb76e2b",
+  "review_sha256": "5bd0aae58c29f421f4afaabb969c396287e4c8456e01d8fe7b150e8ee9dbd5e7",
+  "review_kind": "assistant_rubric",
+  "quality": {
+    "schema_valid_first_attempt": {
+      "positive": 20,
+      "total": 20
+    },
+    "profile_match": {
+      "positive": 24,
+      "total": 24
+    },
+    "focus_match_when_compatible": {
+      "positive": 7,
+      "total": 17
+    },
+    "semantic_duplicate": {
+      "positive": 3,
+      "total": 24
+    },
+    "semantic_duplicates_flagged_at_25": {
+      "positive": 0,
+      "total": 3
+    },
+    "exact_duplicate_titles": 0,
+    "canary_echo_cases": 0,
+    "valid_canary_cases": 5
+  },
+  "projected_cloud_cost": {
+    "kind": "tariff_applied_to_local_usage",
+    "api_model": "ministral-3b-2512",
+    "usd_per_million_input": "0.10",
+    "usd_per_million_output": "0.10",
+    "tariff_source": "https://docs.mistral.ai/inference/pricing",
+    "rub_per_usd": "82.1516",
+    "fx_source": "https://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To=14.11.2026",
+    "sample_total_rub": "0.04946347836",
+    "sample_mean_rub": "0.002473173918",
+    "sample_max_rub": "0.00436224996",
+    "uc07_6000_in_2000_out_rub": "0.06572128000",
+    "actual_cloud_cost_rub": null
+  }
+}
