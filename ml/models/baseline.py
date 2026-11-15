@@ -14,6 +14,7 @@ import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ml.models.cache import GenerationCache
+from ml.models.focus import FOCUS_POLICY_VERSION, safe_focus
 from ml.prompts_v2 import VERSION, messages as v2_messages
 from ml.tools.history import HISTORY_TOOL, dispatch, tool_message
 from ml.tracing import Tracer
@@ -79,7 +80,7 @@ def retry_delay(response, attempt):
 class Baseline:
     def __init__(self, client: httpx.AsyncClient, tracer: Tracer, *, api_key=None,
                  model=None, max_attempts=3, sleep=asyncio.sleep, variant="v1",
-                 cache_ttl=0, history_tool=False):
+                 cache_ttl=0, history_tool=False, focus_guard=True):
         self.client, self.tracer = client, tracer
         self.api_key = api_key if api_key is not None else os.getenv("MISTRAL_API_KEY", "")
         self.model = model or os.getenv("MISTRAL_MODEL", "ministral-8b-2512")
@@ -100,6 +101,7 @@ class Baseline:
         }[variant]
         self.cache = GenerationCache(cache_ttl)
         self.history_tool = history_tool
+        self.focus_guard = focus_guard
 
     async def history_turn(self, messages, profile, request_id):
         """Let the model request a scoped read, then pass the result into generation."""
@@ -151,11 +153,12 @@ class Baseline:
             raise ValueError("count must be 1..50")
         if not self.api_key:
             raise BaselineError("Mistral не настроен: задайте MISTRAL_API_KEY")
+        submitted_focus = (focus or "")[:1500]
         payload = {
             "teacher_id": profile.teacher_id,
             "scientific_areas": [a[:300] for a in profile.scientific_areas],
             "past_topics": [t[:500] for t in profile.past_topics[:20]],
-            "count": count, "focus": (focus or "")[:1500],
+            "count": count, "focus": safe_focus(submitted_focus) if self.focus_guard else submitted_focus,
         }
         messages = [{"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}]
@@ -163,7 +166,8 @@ class Baseline:
         if self.variant != "v1":
             messages = v2_messages(payload, compact=self.variant == "v2-compact")
         cache_key = hashlib.sha256(json.dumps(
-            [self.model, self.prompt_version, messages], ensure_ascii=False,
+            [self.model, self.prompt_version, FOCUS_POLICY_VERSION if self.focus_guard else None, messages],
+            ensure_ascii=False,
             sort_keys=True,
         ).encode()).digest() if self.cache.ttl and use_cache else None
         if cache_key is not None and (cached := self.cache.get(cache_key)) is not None:
