@@ -109,3 +109,20 @@ python -m ml.experiments.lab4 --mode mock --output docs/experiments/results/lab4
 [Вклад схемы, фильтра и кэша](docs/experiments/lab5.md) ·
 [Ноутбук](notebooks/lab5-ablation.ipynb) ·
 [Как воспроизвести прогон](docs/ml-documentation.md#воспроизведение-финальных-метрик)
+
+## Лабораторная 6 — AI Engineer
+
+[AI-блок для выступления](docs/demo/ai-block.md) ·
+[Пять демо-кейсов](docs/demo/ai-cases.md) ·
+[План Б](docs/demo/plan-b.md) ·
+[Протокол и команды запуска](docs/demo-run.md) ·
+[Ноутбук](notebooks/lab6-demo.ipynb)
+
+Исходная версия репетиции закреплена тегом `lab6-ai-demo-v1`.
+Для API-проверки с локальной моделью выполните из чистого worktree тега
+`bash scripts/run-lab6-local.sh lab6-ai-demo-v1 var/lab6-repeat`.
+Ответ при отказе провайдера можно показать отдельно:
+
+```bash
+python -m ml.experiments.lab6 --replay docs/demo/results/lab6-local --case databases
+```

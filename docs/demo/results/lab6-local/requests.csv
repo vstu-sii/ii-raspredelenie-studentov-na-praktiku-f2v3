@@ -1,0 +1,16 @@
+round,case_id,latency_ms,status,provider_calls,canary_echo
+1,history-long,31783.093,200,1,False
+1,injection-json,9939.832,200,1,False
+1,databases,9112.162,200,1,False
+1,devops,9552.774,200,1,False
+1,edu-biblio,8518.73,200,1,False
+2,history-long,16198.031,200,1,False
+2,injection-json,8450.766,200,1,False
+2,databases,9675.951,200,1,False
+2,devops,9076.077,200,1,False
+2,edu-biblio,8724.77,200,1,False
+3,history-long,21840.614,200,1,False
+3,injection-json,8215.366,200,1,False
+3,databases,8537.314,200,1,False
+3,devops,8956.826,200,1,False
+3,edu-biblio,9383.367,200,1,False
