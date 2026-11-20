@@ -1,0 +1,9 @@
+{
+  "source_tag": "lab6-ai-demo-v1",
+  "source_revision": "3a6e9eb4190759ac9b0ef9967ae9e6b97a8957ab",
+  "offline_replay_cases": 5,
+  "network_disabled": true,
+  "matches_first_round": true,
+  "tampered_backup_rejected": true,
+  "request_and_attempt_counts_verified": true
+}

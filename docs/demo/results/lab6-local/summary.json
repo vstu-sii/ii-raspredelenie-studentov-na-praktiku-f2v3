@@ -1,0 +1,66 @@
+{
+  "tag": "lab6-ai-demo-v1",
+  "revision": "3a6e9eb4190759ac9b0ef9967ae9e6b97a8957ab",
+  "mode": "local",
+  "is_model_benchmark": true,
+  "model": "ministral-3b-2512",
+  "engine": "llama.cpp b12292 af6b5243d",
+  "weights_sha256": "fec9d28c7f8dab7c6857d54b56c8264cce57d6f6d9003bd4110f6457f071c65a",
+  "prompt_version": "lab3-topics-v1",
+  "output_schema_version": "lab5-exact-count-v1",
+  "focus_policy_version": "lab5-focus-v1",
+  "cases_sha256": "210cf610210cf299da2c56ef9c434a6e77e51cab25a83f466c6d3cc08462975e",
+  "rounds": 3,
+  "cases": 5,
+  "cold_api": {
+    "requests": 15,
+    "p50_ms": 9112.162,
+    "p95_ms": 31783.093,
+    "max_ms": 31783.093
+  },
+  "within_40s": 15,
+  "per_case": {
+    "history-long": {
+      "requests": 3,
+      "p50_ms": 21840.614,
+      "p95_ms": 31783.093,
+      "max_ms": 31783.093
+    },
+    "injection-json": {
+      "requests": 3,
+      "p50_ms": 8450.766,
+      "p95_ms": 9939.832,
+      "max_ms": 9939.832
+    },
+    "databases": {
+      "requests": 3,
+      "p50_ms": 9112.162,
+      "p95_ms": 9675.951,
+      "max_ms": 9675.951
+    },
+    "devops": {
+      "requests": 3,
+      "p50_ms": 9076.077,
+      "p95_ms": 9552.774,
+      "max_ms": 9552.774
+    },
+    "edu-biblio": {
+      "requests": 3,
+      "p50_ms": 8724.77,
+      "p95_ms": 9383.367,
+      "max_ms": 9383.367
+    }
+  },
+  "warm_outage": {
+    "requests": 15,
+    "p50_ms": 2.261,
+    "p95_ms": 4.201,
+    "max_ms": 4.201
+  },
+  "failure_checks": 27,
+  "provider_attempts": 45,
+  "success_input_tokens": 3519,
+  "success_output_tokens": 1423,
+  "scope": "FastAPI in-process + generator + SQLite; injected provider failures",
+  "backup_sha256": "3a5ae8067e179318e5937351f02556512802b22bff5d48e4adb97c13478c0bc0"
+}

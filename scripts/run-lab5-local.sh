@@ -36,5 +36,5 @@ for attempt in $(seq 1 60); do
   sleep 1
 done
 curl -fsS --max-time 2 http://127.0.0.1:8087/health
-"${PYTHON:-python}" -m ml.experiments.lab5 --mode local --tag "$tag" \
+"${PYTHON:-python}" -m "${AI_EXPERIMENT_MODULE:-ml.experiments.lab5}" --mode local --tag "$tag" \
   --engine-version 'llama.cpp b12292 af6b5243d' --weights-sha256 "$model_sha" --output "$output"
