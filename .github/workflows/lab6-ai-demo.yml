@@ -1,0 +1,39 @@
+name: Lab 6 AI demo rehearsal
+on:
+  pull_request:
+    paths:
+      - 'ml/**'
+      - 'backend/**'
+      - 'tests/**'
+      - 'docs/demo/**'
+      - 'docs/demo-run.md'
+      - 'scripts/run-lab6-local.sh'
+      - 'scripts/run-lab5-local.sh'
+      - 'requirements-ai.txt'
+      - '.github/workflows/lab6-ai-demo.yml'
+  push:
+    tags:
+      - 'lab6-ai-demo-*'
+permissions:
+  contents: read
+jobs:
+  ai-demo-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-ai.txt
+      - run: python -m pip install -r requirements-ai.txt
+      - run: python -m pytest -q
+      - run: python -m ml.experiments.lab6 --mode mock --output var/lab6-smoke
+      - run: python -m ml.experiments.lab6 --replay var/lab6-smoke --case databases
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lab6-ai-demo-contract
+          path: var/lab6-smoke
+          if-no-files-found: error
